@@ -1,1 +1,99 @@
-https://bdshop24.vercel.app
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>লিঙ্ক বাটন পেজ</title>
+    <style>
+        /* সাধারণ ডিজাইন */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* বাটন স্টাইল */
+        .btn-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            text-decoration: none;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: transform 0.2s, background-color 0.3s;
+            display: block;
+        }
+
+        /* বিডি শপ বাটন (সবুজ থিম) */
+        .btn-bdshop {
+            background-color: #28a745;
+        }
+
+        .btn-bdshop:hover {
+            background-color: #218838;
+            transform: translateY(-3px);
+        }
+
+        /* গুগল বাটন (নীল থিম) */
+        .btn-google {
+            background-color: #4285F4;
+        }
+
+        .btn-google:hover {
+            background-color: #357ae8;
+            transform: translateY(-3px);
+        }
+
+        /* ছোট ডিভাইসের জন্য */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>প্রয়োজনীয় লিঙ্কসমূহ</h2>
+        
+        <div class="btn-wrapper">
+            <!-- বিডি শপ লিঙ্ক -->
+            <a href="https://bdshop24.vercel.app/" target="_blank" class="btn btn-bdshop">
+                BD Shop 24
+            </a>
+
+            <!-- গুগল লিঙ্ক -->
+            <a href="https://www.google.com" target="_blank" class="btn btn-google">
+                Google
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
