@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Welcome API</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .container { max-width: 400px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #198754; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #157347; }
+        #message { margin-top: 15px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Send Welcome Mail</h2>
+    <input type="text" id="apiKey" placeholder="Enter Welcome API Key (NurWel_...)">
+    <input type="email" id="targetEmail" placeholder="Receiver Email">
+    <input type="text" id="userName" placeholder="User Name (e.g. John)">
+    <input type="text" id="appName" placeholder="App/Website Name">
+    
+    <button onclick="sendWelcomeMail()">Send Welcome Email</button>
+    <div id="message"></div>
+</div>
+
+<script>
+    async function sendWelcomeMail() {
+        const apiKey = document.getElementById('apiKey').value;
+        const email = document.getElementById('targetEmail').value;
+        const name = document.getElementById('userName').value;
+        const appName = document.getElementById('appName').value;
+        const msgBox = document.getElementById('message');
+
+        if(!apiKey || !email || !name || !appName) {
+            alert("Please fill all the fields!");
+            return;
+        }
+
+        msgBox.style.color = "#666";
+        msgBox.innerText = "Sending request...";
+
+        try {
+            let response = await fetch('https://api.mailautomate.com/v1/send-welcome', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + apiKey,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    to: email,
+                    name: name,
+                    app_name: appName
+                })
+            });
+
+            if(response.ok || response.status === 200) {
+                msgBox.style.color = "green";
+                msgBox.innerText = "✅ Welcome Mail request sent successfully!";
+            } else {
+                msgBox.style.color = "red";
+                msgBox.innerText = "❌ API Error: Check your backend server.";
+            }
+        } catch (error) {
+            console.error(error);
+            msgBox.style.color = "red";
+            msgBox.innerText = "❌ Network Error! Is the backend running?";
+        }
+    }
+</script>
+
+</body>
+</html>
