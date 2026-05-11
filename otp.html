@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test OTP API</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .container { max-width: 400px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #0D6EFD; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0b5ed7; }
+        .hidden { display: none; }
+        #message { margin-top: 15px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Setup Layer -->
+    <div id="setupLayer">
+        <h2>Send OTP</h2>
+        <input type="text" id="apiKey" placeholder="Enter API Key (NurAt_...)">
+        <input type="email" id="userEmail" placeholder="Target Email Address">
+        <button onclick="sendOtpRequest()">Send OTP Mail</button>
+        <div id="statusMessage" style="color: #666; margin-top: 10px; text-align: center;"></div>
+    </div>
+
+    <!-- Verify Layer (Initially Hidden) -->
+    <div id="verifyLayer" class="hidden">
+        <h2>Verify OTP</h2>
+        <p style="color: #555; font-size: 14px;">An OTP has been sent to your email. Please check your inbox and enter it below.</p>
+        <input type="number" id="otpInput" placeholder="Enter 6-digit OTP">
+        <button onclick="verifyOtp()">Verify Now</button>
+        <div id="verifyMessage" id="message"></div>
+    </div>
+</div>
+
+<script>
+    let generatedOTP = ""; // র‍্যান্ডম ওটিপি স্টোর করার ভেরিয়েবল
+
+    async function sendOtpRequest() {
+        const apiKey = document.getElementById('apiKey').value;
+        const email = document.getElementById('userEmail').value;
+        const statusText = document.getElementById('statusMessage');
+
+        if(!apiKey || !email) {
+            alert("Please fill both fields!");
+            return;
+        }
+
+        // ৬ সংখ্যার র‍্যান্ডম কোড তৈরি করা হচ্ছে (ব্যবহারকারী এটি দেখতে পারবে না)
+        generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+
+        statusText.innerText = "Sending request...";
+
+        try {
+            // আপনার API এন্ডপয়েন্টে রিকোয়েস্ট পাঠানো হচ্ছে
+            let response = await fetch('https://api.mailautomate.com/v1/send', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + apiKey,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    to: email,
+                    otp: generatedOTP,
+                    validity: "5"
+                })
+            });
+
+            // রিকোয়েস্ট সফল হলে ভেরিফাই লেয়ার দেখাবে
+            if(response.ok || response.status === 200) {
+                document.getElementById('setupLayer').classList.add('hidden');
+                document.getElementById('verifyLayer').classList.remove('hidden');
+            } else {
+                statusText.innerText = "API Error: Check your backend server.";
+            }
+        } catch (error) {
+            // (নোট: যদি আপনার ব্যাকএন্ড সার্ভার এখনো লাইভ না থাকে, তবে এটি ফেইল হতে পারে)
+            console.error(error);
+            statusText.innerText = "Network Error! Is the API server running?";
+            
+            // ডেমো পারপাসের জন্য (যদি ব্যাকএন্ড না থাকে তাও ভেরিফাই লেয়ার চেক করার জন্য)
+            // document.getElementById('setupLayer').classList.add('hidden');
+            // document.getElementById('verifyLayer').classList.remove('hidden');
+        }
+    }
+
+    function verifyOtp() {
+        const userInput = document.getElementById('otpInput').value;
+        const verifyMsg = document.getElementById('verifyMessage');
+
+        if(userInput === generatedOTP) {
+            verifyMsg.style.color = "green";
+            verifyMsg.innerText = "✅ Success! OTP Matched perfectly.";
+        } else {
+            verifyMsg.style.color = "red";
+            verifyMsg.innerText = "❌ Failed! Incorrect OTP.";
+        }
+    }
+</script>
+
+</body>
+</html>
